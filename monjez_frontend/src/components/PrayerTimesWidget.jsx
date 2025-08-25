@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Clock, Mosque, Bell } from 'lucide-react'
+import { Clock, Landmark as Mosque, Bell } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card.jsx'
 import { Badge } from '@/components/ui/badge.jsx'
 import { Button } from '@/components/ui/button.jsx'

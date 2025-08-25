@@ -1,9 +1,8 @@
-from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import uuid
 from werkzeug.security import generate_password_hash, check_password_hash
+from . import db
 
-db = SQLAlchemy()
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -33,14 +32,3 @@ class User(db.Model):
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat()
         }
-
-class UserTeam(db.Model):
-    __tablename__ = 'user_teams'
-    
-    user_id = db.Column(db.String(36), db.ForeignKey('users.id'), primary_key=True)
-    team_id = db.Column(db.String(36), db.ForeignKey('teams.id'), primary_key=True)
-    role = db.Column(db.String(50), default='editor')  # admin, editor, viewer
-    
-    user = db.relationship('User', backref='team_memberships')
-    team = db.relationship('Team', backref='user_memberships')
-

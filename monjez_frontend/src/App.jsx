@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
-import { Calendar, Plus, Search, Settings, User, Moon, Sun, Brain, Mosque } from 'lucide-react'
+import { Calendar, Plus, Search, Settings, User, Moon, Sun, Brain, Landmark as Mosque, Clock, Flag } from 'lucide-react'
 import { Button } from '@/components/ui/button.jsx'
 import { Input } from '@/components/ui/input.jsx'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card.jsx'
 import { Badge } from '@/components/ui/badge.jsx'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog.jsx'
 import PrayerTimesWidget from './components/PrayerTimesWidget.jsx'
 import AIAssistant from './components/AIAssistant.jsx'
 import './App.css'
@@ -18,46 +19,119 @@ function App() {
   const [tasks, setTasks] = useState([
     {
       id: 1,
-      title: 'اجتماع الفريق الأسبوعي',
-      description: 'مراجعة التقدم في المشاريع الحالية',
+      title: 'اجتماع المنتج',
+      description: 'مراجعة خارطة الطريق',
       status: 'todo',
       priority: 'high',
-      dueDate: new Date(2025, 8, 10, 10, 0),
-      project: 'سبق',
-      color: '#1E88E5'
+      dueDate: new Date(new Date().getFullYear(), new Date().getMonth(), 5, 11, 0),
+      project: 'المنتج',
+      color: '#DBEAFE' // أزرق فاتح
     },
     {
       id: 2,
-      title: 'إنهاء تقرير الربع الثالث',
-      description: 'تجميع البيانات وكتابة التقرير النهائي',
+      title: 'موعد مع عميل',
+      description: 'عرض مميزات الإصدار التالي',
       status: 'in_progress',
-      priority: 'urgent',
-      dueDate: new Date(2025, 8, 12, 17, 0),
-      project: 'تطوير',
-      color: '#8E24AA'
+      priority: 'med',
+      dueDate: new Date(new Date().getFullYear(), new Date().getMonth(), 8, 16, 30),
+      project: 'مبيعات',
+      color: '#FEF9C3' // أصفر فاتح
     },
     {
       id: 3,
-      title: 'مراجعة الكود الجديد',
-      description: 'مراجعة التحديثات الأخيرة على النظام',
+      title: 'مراجعة تصميم',
+      description: 'مراجعة لوحات الواجهة',
       status: 'todo',
-      priority: 'med',
-      dueDate: new Date(2025, 8, 15, 14, 0),
-      project: 'تطوير',
-      color: '#8E24AA'
+      priority: 'low',
+      dueDate: new Date(new Date().getFullYear(), new Date().getMonth(), 10, 14, 0),
+      project: 'تصميم',
+      color: '#FCE7F3' // وردي فاتح
     },
     {
       id: 4,
-      title: 'صلاة الظهر',
-      description: 'تذكير بموعد صلاة الظهر',
+      title: 'كتابة تقرير',
+      description: 'تقرير الأداء الشهري',
+      status: 'todo',
+      priority: 'med',
+      dueDate: new Date(new Date().getFullYear(), new Date().getMonth(), 12, 9, 0),
+      project: 'تقارير',
+      color: '#EDE9FE' // بنفسجي فاتح
+    },
+    {
+      id: 5,
+      title: 'تدريب الفريق',
+      description: 'جلسة تدريب أدوات',
       status: 'todo',
       priority: 'high',
-      dueDate: new Date(2025, 8, 25, 12, 5),
+      dueDate: new Date(new Date().getFullYear(), new Date().getMonth(), 15, 13, 0),
+      project: 'موارد بشرية',
+      color: '#FFEDD5' // برتقالي فاتح
+    },
+    {
+      id: 6,
+      title: 'مكالمة مبيعات',
+      description: 'متابعة العملاء المحتملين',
+      status: 'todo',
+      priority: 'med',
+      dueDate: new Date(new Date().getFullYear(), new Date().getMonth(), 18, 17, 0),
+      project: 'مبيعات',
+      color: '#CFFAFE' // سماوي فاتح
+    },
+    {
+      id: 7,
+      title: 'تحديث بنية',
+      description: 'ترقية خدمات البنية',
+      status: 'todo',
+      priority: 'med',
+      dueDate: new Date(new Date().getFullYear(), new Date().getMonth(), 20, 10, 30),
+      project: 'DevOps',
+      color: '#E2E8F0' // رمادي فاتح
+    },
+    {
+      id: 8,
+      title: 'صلاة الظهر',
+      description: 'تذكير بموعد الصلاة',
+      status: 'todo',
+      priority: 'high',
+      dueDate: new Date(new Date().getFullYear(), new Date().getMonth(), 22, 12, 5),
       project: 'عبادة',
-      color: '#22c55e',
       isPrayer: true
-    }
+    },
+    {
+      id: 9,
+      title: 'موعد طبي',
+      description: 'فحص دوري',
+      status: 'todo',
+      priority: 'low',
+      dueDate: new Date(new Date().getFullYear(), new Date().getMonth(), 24, 8, 30),
+      project: 'شخصي',
+      color: '#DCFCE7' // أخضر فاتح
+    },
+    {
+      id: 10,
+      title: 'تقديم عرض',
+      description: 'عرض نتائج الربع',
+      status: 'todo',
+      priority: 'high',
+      dueDate: new Date(new Date().getFullYear(), new Date().getMonth(), 27, 15, 30),
+      project: 'إدارة',
+      color: '#E0E7FF' // نيلي فاتح
+    },
   ])
+
+  const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false)
+  const [selectedTask, setSelectedTask] = useState(null)
+
+  const openTaskModal = (task) => {
+    setSelectedTask(task)
+    setIsTaskDialogOpen(true)
+  }
+
+  const markTaskDone = () => {
+    if (!selectedTask) return
+    setTasks(prev => prev.map(t => t.id === selectedTask.id ? { ...t, status: 'done' } : t))
+    setSelectedTask(prev => prev ? { ...prev, status: 'done' } : prev)
+  }
 
   const formatDate = (date) => {
     if (calendarType === 'hijri') {
@@ -105,6 +179,14 @@ function App() {
     }
   }
 
+  const isSameDayDate = (a, b) => a.toDateString() === b.toDateString()
+  const getStartOfWeek = (date) => {
+    const d = new Date(date)
+    const day = d.getDay() // 0 الأحد
+    const diff = d.getDate() - day
+    return new Date(d.getFullYear(), d.getMonth(), diff)
+  }
+
   const todayTasks = tasks.filter(task => {
     const today = new Date()
     const taskDate = new Date(task.dueDate)
@@ -117,10 +199,10 @@ function App() {
     return taskDate > today
   }).slice(0, 5)
 
-  return (
-    <div className={`min-h-screen ${darkMode ? 'dark bg-gray-900' : 'bg-gray-50'}`}>
+  return (<>
+    <div className={`min-h-screen ${darkMode ? 'dark bg-gray-900' : 'bg-[#f8f8f7]'}`}>
       {/* الشريط العلوي */}
-      <header className="bg-white dark:bg-gray-800 shadow-sm border-b">
+      <header className="bg-white dark:bg-[#141413] border-b border-[#f0f0ef] dark:border-[#272726]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* الشعار */}
@@ -196,7 +278,7 @@ function App() {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
           {/* الشريط الجانبي */}
           <div className="lg:col-span-1">
             <div className="space-y-6">
@@ -225,7 +307,7 @@ function App() {
                       todayTasks.map(task => (
                         <div 
                           key={task.id} 
-                          className={`task-card p-3 bg-gray-50 dark:bg-gray-700 rounded-lg ${
+                          className={`task-card p-3 bg-white dark:bg-[#141413] border border-[#f0f0ef] dark:border-[#272726] rounded-none ${
                             task.isPrayer ? 'border-r-4 border-green-500' : ''
                           }`}
                         >
@@ -259,7 +341,7 @@ function App() {
                 <CardContent>
                   <div className="space-y-3">
                     {upcomingTasks.map(task => (
-                      <div key={task.id} className="task-card p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                      <div key={task.id} className="task-card p-3 bg-white dark:bg-[#141413] border border-[#f0f0ef] dark:border-[#272726] rounded-none">
                         <div className="flex items-center justify-between mb-2">
                           <h4 className="font-medium text-sm">{task.title}</h4>
                           <div className={`w-2 h-2 rounded-full ${getPriorityColor(task.priority)}`}></div>
@@ -304,7 +386,7 @@ function App() {
           </div>
 
           {/* منطقة التقويم الرئيسية */}
-          <div className="lg:col-span-3">
+          <div className="lg:col-span-4">
             <Card className="fade-in">
               <CardHeader>
                 <div className="flex justify-between items-center">
@@ -337,68 +419,124 @@ function App() {
                 </div>
               </CardHeader>
               <CardContent>
-                {/* عرض التقويم الشهري المبسط */}
                 <div className="calendar-grid">
-                  <div className="grid grid-cols-7 gap-2 mb-4">
-                    {['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'].map(day => (
-                      <div key={day} className="p-2 text-center font-medium text-gray-600 dark:text-gray-300 text-sm">
-                        {day}
+                  {viewType === 'month' && (
+                    <>
+                      <div className="grid grid-cols-7 gap-2 mb-4">
+                        {['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'].map(day => (
+                          <div key={day} className="p-2 text-center font-medium text-gray-600 dark:text-gray-300 text-sm">
+                            {day}
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                  
-                  <div className="grid grid-cols-7 gap-2">
-                    {Array.from({ length: 35 }, (_, i) => {
-                      const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), i - 6)
-                      const isCurrentMonth = date.getMonth() === currentDate.getMonth()
-                      const isToday = date.toDateString() === new Date().toDateString()
-                      const dayTasks = tasks.filter(task => 
-                        new Date(task.dueDate).toDateString() === date.toDateString()
-                      )
-                      
-                      return (
-                        <div
-                          key={i}
-                          className={`
-                            calendar-day min-h-[80px] p-2 border rounded-lg cursor-pointer transition-all interactive-element
-                            ${isCurrentMonth ? 'bg-white dark:bg-gray-800' : 'bg-gray-50 dark:bg-gray-700'}
-                            ${isToday ? 'ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-900' : ''}
-                            hover:bg-gray-100 dark:hover:bg-gray-600
-                          `}
-                        >
-                          <div className={`text-sm font-medium mb-1 ${
-                            isCurrentMonth ? 'text-gray-900 dark:text-white' : 'text-gray-400'
-                          }`}>
-                            {date.getDate()}
-                          </div>
-                          {calendarType === 'hijri' && (
-                            <div className="hijri-date">
-                              {/* يمكن إضافة التاريخ الهجري هنا */}
+                      <div className="grid grid-cols-7 gap-2">
+                        {Array.from({ length: 35 }, (_, i) => {
+                          const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), i - 6)
+                          const isCurrentMonth = date.getMonth() === currentDate.getMonth()
+                          const dayTasks = tasks.filter(task => isSameDayDate(new Date(task.dueDate), date))
+                          return (
+                            <div
+                              key={i}
+                              className={`
+                                calendar-day min-h-[120px] p-2 border rounded-none cursor-pointer
+                                ${isCurrentMonth ? 'bg-white dark:bg-[#141413]' : 'bg-[#f8f8f7] dark:bg-[#0f0f0e]'}
+                                border-[#f0f0ef] dark:border-[#272726]
+                              `}
+                            >
+                              <div className={`text-sm font-medium mb-1 ${isCurrentMonth ? 'text-gray-900 dark:text-white' : 'text-gray-400'}`}>
+                                {date.getDate()}
+                              </div>
+                              <div className="space-y-1">
+                                {dayTasks.slice(0, 2).map(task => (
+                                  <div
+                                    key={task.id}
+                                    onClick={() => openTaskModal(task)}
+                                    className={`text-xs p-1 rounded truncate cursor-pointer hover:opacity-90 transition ${task.isPrayer ? 'text-white' : 'text-gray-900'} ${task.isPrayer ? 'bg-green-500' : ''}`}
+                                    style={{ backgroundColor: task.isPrayer ? '#22c55e' : task.color }}
+                                  >
+                                    {task.isPrayer && <Mosque className="h-3 w-3 inline ml-1" />}
+                                    {task.title}
+                                  </div>
+                                ))}
+                                {dayTasks.length > 2 && (
+                                  <div className="text-xs text-gray-500">+{dayTasks.length - 2} أخرى</div>
+                                )}
+                              </div>
                             </div>
-                          )}
-                          <div className="space-y-1">
-                            {dayTasks.slice(0, 2).map(task => (
-                              <div
-                                key={task.id}
-                                className={`text-xs p-1 rounded text-white truncate ${
-                                  task.isPrayer ? 'bg-green-500' : ''
-                                }`}
-                                style={{ backgroundColor: task.isPrayer ? '#22c55e' : task.color }}
-                              >
-                                {task.isPrayer && <Mosque className="h-3 w-3 inline ml-1" />}
-                                {task.title}
-                              </div>
-                            ))}
-                            {dayTasks.length > 2 && (
-                              <div className="text-xs text-gray-500">
-                                +{dayTasks.length - 2} أخرى
-                              </div>
-                            )}
-                          </div>
+                          )
+                        })}
+                      </div>
+                    </>
+                  )}
+
+                  {viewType === 'week' && (() => {
+                    const start = getStartOfWeek(currentDate)
+                    const days = Array.from({ length: 7 }, (_, i) => new Date(start.getFullYear(), start.getMonth(), start.getDate() + i))
+                    return (
+                      <>
+                        <div className="grid grid-cols-7 gap-2 mb-2">
+                          {['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'].map((day, idx) => (
+                            <div key={day} className="text-center text-sm font-medium text-gray-600 dark:text-gray-300">
+                              {day} {days[idx].getDate()}
+                            </div>
+                          ))}
                         </div>
-                      )
-                    })}
-                  </div>
+                        <div className="grid grid-cols-7 gap-2">
+                          {days.map((date, i) => {
+                            const dayTasks = tasks.filter(task => isSameDayDate(new Date(task.dueDate), date))
+                            return (
+                              <div
+                                key={i}
+                                className="min-h-[160px] p-2 border rounded-none bg-white dark:bg-[#141413] border-[#f0f0ef] dark:border-[#272726]"
+                              >
+                                <div className="space-y-1">
+                                  {dayTasks.length ? dayTasks.map(task => (
+                                    <div
+                                      key={task.id}
+                                      onClick={() => openTaskModal(task)}
+                                      className={`text-xs p-1 rounded truncate cursor-pointer hover:opacity-90 transition ${task.isPrayer ? 'text-white' : 'text-gray-900'} ${task.isPrayer ? 'bg-green-500' : ''}`}
+                                      style={{ backgroundColor: task.isPrayer ? '#22c55e' : task.color }}
+                                    >
+                                      {task.isPrayer && <Mosque className="h-3 w-3 inline ml-1" />}
+                                      {task.title}
+                                    </div>
+                                  )) : (
+                                    <div className="text-xs text-gray-400 text-center pt-4">لا مهام</div>
+                                  )}
+                                </div>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      </>
+                    )
+                  })()}
+
+                  {viewType === 'day' && (() => {
+                    const dayTasks = tasks.filter(task => isSameDayDate(new Date(task.dueDate), currentDate))
+                    return (
+                      <div className="space-y-2">
+                        {dayTasks.length ? dayTasks.map(task => (
+                          <div
+                            key={task.id}
+                            onClick={() => openTaskModal(task)}
+                            className="p-3 border rounded-none bg-white dark:bg-[#141413] border-[#f0f0ef] dark:border-[#272726] cursor-pointer hover:bg-[#f8f8f7] dark:hover:bg-[#0f0f0e] transition"
+                          >
+                            <div className="flex items-center justify-between">
+                              <h4 className="font-medium text-sm">{task.title}</h4>
+                              <span className="text-xs text-gray-500">{formatTime(new Date(task.dueDate))}</span>
+                            </div>
+                            <div className="flex items-center justify-between mt-2">
+                              <Badge variant="outline" className="text-xs">{task.project}</Badge>
+                              <span className="text-xs">{getPriorityText(task.priority)}</span>
+                            </div>
+                          </div>
+                        )) : (
+                          <div className="text-sm text-gray-500 text-center py-8">لا توجد مهام هذا اليوم</div>
+                        )}
+                      </div>
+                    )
+                  })()}
                 </div>
               </CardContent>
             </Card>
@@ -406,7 +544,40 @@ function App() {
         </div>
       </div>
     </div>
-  )
+    <Dialog open={isTaskDialogOpen} onOpenChange={setIsTaskDialogOpen}>
+      <DialogContent className="rounded-none border border-[#f0f0ef] dark:border-[#272726] bg-white dark:bg-[#141413]">
+        {selectedTask && (
+          <>
+            <DialogHeader>
+              <DialogTitle className="flex items-center justify-between">
+                <span className="text-xl">{selectedTask.title}</span>
+                <Badge variant="outline" className="text-xs">
+                  {getStatusText(selectedTask.status)}
+                </Badge>
+              </DialogTitle>
+              <DialogDescription className="text-right">
+                {selectedTask.description || 'لا يوجد وصف'}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between text-sm">
+                <span className="flex items-center"><Calendar className="h-4 w-4 ml-2" />{formatDate(new Date(selectedTask.dueDate))}</span>
+                <span className="flex items-center"><Clock className="h-4 w-4 ml-2" />{formatTime(new Date(selectedTask.dueDate))}</span>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span className="flex items-center"><Flag className="h-4 w-4 ml-2" />{getPriorityText(selectedTask.priority)}</span>
+                <Badge variant="outline" className="text-xs">{selectedTask.project}</Badge>
+              </div>
+            </div>
+            <DialogFooter className="mt-4">
+              <Button onClick={markTaskDone} variant="default" className="btn-primary">إكمال المهمة</Button>
+              <Button variant="outline" onClick={() => setIsTaskDialogOpen(false)}>إغلاق</Button>
+            </DialogFooter>
+          </>
+        )}
+      </DialogContent>
+    </Dialog>
+  </>)
 }
 
 export default App

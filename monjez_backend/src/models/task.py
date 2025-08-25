@@ -1,8 +1,7 @@
-from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import uuid
+from . import db
 
-db = SQLAlchemy()
 
 # جدول الربط بين المستخدمين والفرق
 user_teams = db.Table('user_teams',
