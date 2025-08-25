@@ -1,3 +1,17 @@
+.calendar-grid .calendar-day {
+  transition: background-color .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+.calendar-grid .calendar-day:hover {
+  background-color: #f3f3f2;
+}
+.dark .calendar-grid .calendar-day:hover {
+  background-color: #0f0f0e;
+}
+@media (max-width: 640px) {
+  .calendar-grid .calendar-day {
+    min-height: 96px;
+  }
+}
 @import "tailwindcss";
 @import "tw-animate-css";
 

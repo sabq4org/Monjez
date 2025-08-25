@@ -200,7 +200,7 @@ function App() {
   }).slice(0, 5)
 
   return (<>
-    <div className={`min-h-screen ${darkMode ? 'dark bg-gray-900' : 'bg-[#f8f8f7]'}`}>
+    <div className={`min-h-screen antialiased ${darkMode ? 'dark bg-gray-900' : 'bg-[#f8f8f7]'}`}>
       {/* الشريط العلوي */}
       <header className="bg-white dark:bg-[#141413] border-b border-[#f0f0ef] dark:border-[#272726]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -278,7 +278,7 @@ function App() {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 md:gap-8">
           {/* الشريط الجانبي */}
           <div className="lg:col-span-1">
             <div className="space-y-6">
@@ -422,14 +422,14 @@ function App() {
                 <div className="calendar-grid">
                   {viewType === 'month' && (
                     <>
-                      <div className="grid grid-cols-7 gap-2 mb-4">
+                      <div className="calendar-week-header grid grid-cols-7 gap-2 md:gap-3 mb-4 sticky top-0 z-10 bg-white dark:bg-[#141413]">
                         {['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'].map(day => (
                           <div key={day} className="p-2 text-center font-medium text-gray-600 dark:text-gray-300 text-sm">
                             {day}
                           </div>
                         ))}
                       </div>
-                      <div className="grid grid-cols-7 gap-2">
+                      <div className="grid grid-cols-7 gap-2 md:gap-3">
                         {Array.from({ length: 35 }, (_, i) => {
                           const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), i - 6)
                           const isCurrentMonth = date.getMonth() === currentDate.getMonth()
@@ -438,28 +438,33 @@ function App() {
                             <div
                               key={i}
                               className={`
-                                calendar-day min-h-[120px] p-2 border rounded-none cursor-pointer
+                                calendar-day min-h-[150px] p-2 border rounded-none cursor-pointer
                                 ${isCurrentMonth ? 'bg-white dark:bg-[#141413]' : 'bg-[#f8f8f7] dark:bg-[#0f0f0e]'}
                                 border-[#f0f0ef] dark:border-[#272726]
                               `}
                             >
-                              <div className={`text-sm font-medium mb-1 ${isCurrentMonth ? 'text-gray-900 dark:text-white' : 'text-gray-400'}`}>
+                              <div className={`text-base md:text-lg font-semibold mb-1 ${isCurrentMonth ? 'text-gray-900 dark:text-white' : 'text-gray-400'}`}>
                                 {date.getDate()}
                               </div>
                               <div className="space-y-1">
-                                {dayTasks.slice(0, 2).map(task => (
-                                  <div
-                                    key={task.id}
-                                    onClick={() => openTaskModal(task)}
-                                    className={`text-xs p-1 rounded truncate cursor-pointer hover:opacity-90 transition ${task.isPrayer ? 'text-white' : 'text-gray-900'} ${task.isPrayer ? 'bg-green-500' : ''}`}
-                                    style={{ backgroundColor: task.isPrayer ? '#22c55e' : task.color }}
-                                  >
-                                    {task.isPrayer && <Mosque className="h-3 w-3 inline ml-1" />}
-                                    {task.title}
-                                  </div>
-                                ))}
-                                {dayTasks.length > 2 && (
-                                  <div className="text-xs text-gray-500">+{dayTasks.length - 2} أخرى</div>
+                                {dayTasks.length > 0 && (() => {
+                                  const task = dayTasks[0]
+                                  const bg = task.isPrayer ? '#22c55e' : (task.color || '#E5E7EB')
+                                  const borderColor = task.isPrayer ? '#16a34a' : bg
+                                  return (
+                                    <div
+                                      key={task.id}
+                                      onClick={() => openTaskModal(task)}
+                                      className={`text-[11px] md:text-xs px-2 py-1 rounded truncate cursor-pointer hover:opacity-90 transition ${task.isPrayer ? 'text-white' : 'text-gray-900'}`}
+                                      style={{ backgroundColor: bg, borderRight: `4px solid ${borderColor}` }}
+                                    >
+                                      {task.isPrayer && <Mosque className="h-3 w-3 inline ml-1" />}
+                                      {task.title}
+                                    </div>
+                                  )
+                                })()}
+                                {dayTasks.length > 1 && (
+                                  <div className="text-[11px] md:text-xs text-gray-500">+{dayTasks.length - 1} أخرى</div>
                                 )}
                               </div>
                             </div>
@@ -481,26 +486,36 @@ function App() {
                             </div>
                           ))}
                         </div>
-                        <div className="grid grid-cols-7 gap-2">
+                        <div className="grid grid-cols-7 gap-2 md:gap-3">
                           {days.map((date, i) => {
                             const dayTasks = tasks.filter(task => isSameDayDate(new Date(task.dueDate), date))
                             return (
                               <div
                                 key={i}
-                                className="min-h-[160px] p-2 border rounded-none bg-white dark:bg-[#141413] border-[#f0f0ef] dark:border-[#272726]"
+                                className="min-h-[180px] p-2 border rounded-none bg-white dark:bg-[#141413] border-[#f0f0ef] dark:border-[#272726]"
                               >
                                 <div className="space-y-1">
-                                  {dayTasks.length ? dayTasks.map(task => (
-                                    <div
-                                      key={task.id}
-                                      onClick={() => openTaskModal(task)}
-                                      className={`text-xs p-1 rounded truncate cursor-pointer hover:opacity-90 transition ${task.isPrayer ? 'text-white' : 'text-gray-900'} ${task.isPrayer ? 'bg-green-500' : ''}`}
-                                      style={{ backgroundColor: task.isPrayer ? '#22c55e' : task.color }}
-                                    >
-                                      {task.isPrayer && <Mosque className="h-3 w-3 inline ml-1" />}
-                                      {task.title}
-                                    </div>
-                                  )) : (
+                                  {dayTasks.length ? (() => {
+                                    const task = dayTasks[0]
+                                    const bg = task.isPrayer ? '#22c55e' : (task.color || '#E5E7EB')
+                                    const borderColor = task.isPrayer ? '#16a34a' : bg
+                                    return (
+                                      <>
+                                        <div
+                                          key={task.id}
+                                          onClick={() => openTaskModal(task)}
+                                          className={`text-[11px] md:text-xs px-2 py-1 rounded truncate cursor-pointer hover:opacity-90 transition ${task.isPrayer ? 'text-white' : 'text-gray-900'}`}
+                                          style={{ backgroundColor: bg, borderRight: `4px solid ${borderColor}` }}
+                                        >
+                                          {task.isPrayer && <Mosque className="h-3 w-3 inline ml-1" />}
+                                          {task.title}
+                                        </div>
+                                        {dayTasks.length > 1 && (
+                                          <div className="text-[11px] md:text-xs text-gray-500">+{dayTasks.length - 1} أخرى</div>
+                                        )}
+                                      </>
+                                    )
+                                  })() : (
                                     <div className="text-xs text-gray-400 text-center pt-4">لا مهام</div>
                                   )}
                                 </div>
